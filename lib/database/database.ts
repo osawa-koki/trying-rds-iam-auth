@@ -28,14 +28,13 @@ export default class DatabaseStack extends cdk.Stack {
       vpcSubnets: selectedSubnets,
       deletionProtection: false,
       defaultDatabaseName: process.env.AURORA_DATABASE_NAME ?? 'default_database',
-      writer: rds.ClusterInstance.provisioned("Writer", {
+      writer: rds.ClusterInstance.provisioned('Writer', {
         instanceType: ec2.InstanceType.of(
           // `rds.AuroraMysqlEngineVersion.VER_3_04_0`は`t3.medium`以上のみ選択可能。
           ec2.InstanceClass.T3,
           ec2.InstanceSize.MEDIUM
         ),
-        publiclyAccessible: false,
-        instanceIdentifier: "db-writer",
+        publiclyAccessible: true,
       }),
       // IAM認証を有効にする。
       iamAuthentication: true,

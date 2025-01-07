@@ -23,5 +23,12 @@ export default class OutputStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'AuroraPort', {
       value: aurora.clusterEndpoint.port.toString(),
     });
+
+    const secret = aurora.secret?.secretName;
+    if (secret != null) {
+      new cdk.CfnOutput(this, 'AuroraSecret', {
+        value: secret,
+      });
+    }
   }
 }
