@@ -8,6 +8,7 @@ interface NetworkStackProps extends cdk.StackProps {
 
 export default class NetworkStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
+  public readonly selectedSubnets: ec2.SelectedSubnets;
 
   constructor(scope: Construct, id: string, props: NetworkStackProps) {
     const { stackName } = props;
@@ -30,5 +31,6 @@ export default class NetworkStack extends cdk.Stack {
     });
 
     this.vpc = vpc;
+    this.selectedSubnets = vpc.selectSubnets({ subnetGroupName: 'public-subnet' });
   }
 }
