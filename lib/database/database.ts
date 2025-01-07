@@ -27,7 +27,7 @@ export default class DatabaseStack extends cdk.Stack {
       vpc,
       vpcSubnets: selectedSubnets,
       deletionProtection: false,
-      defaultDatabaseName: process.env.AURORA_DATABASE_NAME ?? 'default_database',
+      defaultDatabaseName: process.env.AURORA_DATABASE_NAME!,
       writer: rds.ClusterInstance.provisioned('Writer', {
         instanceType: ec2.InstanceType.of(
           // `rds.AuroraMysqlEngineVersion.VER_3_04_0`は`t3.medium`以上のみ選択可能。
