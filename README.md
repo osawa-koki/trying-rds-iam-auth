@@ -16,6 +16,22 @@ cdk synth
 cdk deploy --require-approval never --all
 ```
 
+リソースの作成が完了したら以下のコマンドを実行します。  
+このコマンドによりDBユーザーが作成され、データベースにアクセスできるようになります。  
+
+```shell
+./mysql_setup.sh
+```
+
+MySQLにログインするためには、以下のコマンドを実行します。  
+
+```shell
+./mysql_login.sh
+
+# SHOW DATABASES;
+# SELECT DATABASE();
+```
+
 ---
 
 GitHub Actionsでデプロイするためには、以下のシークレットを設定してください。  

@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 
 import NetworkStack from './network/network';
 import DatabaseStack from './database/database';
+import OutputStack from './output/output';
 
 export class IndexStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -21,6 +22,12 @@ export class IndexStack extends cdk.Stack {
       selectedSubnets: networkStack.selectedSubnets,
     });
     databaseStack.addDependency(networkStack);
+
+    const outputStack = new OutputStack(this, 'OutputStack', {
+      stackName: `${process.env.BASE_STACK_NAME!}-output`,
+      aurora: databaseStack.aurora,
+    });
+    outputStack.addDependency(databaseStack);
   }
 }
 

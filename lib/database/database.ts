@@ -20,6 +20,18 @@ export default class DatabaseStack extends cdk.Stack {
       stackName,
     });
 
+    // 勉強目的のため、Auroraに対して全てのIPアドレスからのMySQL（ポート3306）接続を許可する。
+    const securityGroup = new ec2.SecurityGroup(this, 'AuroraSecurityGroup', {
+      vpc,
+      allowAllOutbound: true,
+      description: 'Security group for Aurora database',
+    });
+    securityGroup.addIngressRule(
+      ec2.Peer.anyIpv4(),
+      ec2.Port.tcp(3306),
+      'Allow MySQL access from anywhere'
+    );
+
     const aurora = new rds.DatabaseCluster(this, 'MyAurora', {
       engine: rds.DatabaseClusterEngine.auroraMysql({
         version: rds.AuroraMysqlEngineVersion.VER_3_04_0
@@ -27,29 +39,21 @@ export default class DatabaseStack extends cdk.Stack {
       vpc,
       vpcSubnets: selectedSubnets,
       deletionProtection: false,
-      defaultDatabaseName: process.env.AURORA_DATABASE_NAME ?? 'default_database',
-      writer: rds.ClusterInstance.provisioned("Writer", {
+      defaultDatabaseName: process.env.AURORA_DATABASE_NAME!,
+      writer: rds.ClusterInstance.provisioned('Writer', {
         instanceType: ec2.InstanceType.of(
           // `rds.AuroraMysqlEngineVersion.VER_3_04_0`は`t3.medium`以上のみ選択可能。
           ec2.InstanceClass.T3,
           ec2.InstanceSize.MEDIUM
         ),
-        publiclyAccessible: false,
-        instanceIdentifier: "db-writer",
+        publiclyAccessible: true,
       }),
       // IAM認証を有効にする。
       iamAuthentication: true,
       // 節約のために読み取り専用インスタンスは作成しない。
       readers: [],
+      securityGroups: [securityGroup],
     });
-
-    // 勉強目的のため、Auroraに対して全てのIPアドレスからのMySQL（ポート3306）接続を許可する。
-    const securityGroup = new ec2.SecurityGroup(this, 'AuroraSecurityGroup', {
-      vpc,
-      allowAllOutbound: true,
-    });
-    securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(3306), 'Allow MySQL access from anywhere');
-    aurora.connections.addSecurityGroup(securityGroup);
 
     this.aurora = aurora;
   }
