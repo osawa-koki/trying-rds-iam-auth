@@ -27,6 +27,9 @@ MySQLにログインするためには、以下のコマンドを実行します
 
 ```shell
 ./mysql_login.sh
+
+# SHOW DATABASES;
+# SELECT DATABASE();
 ```
 
 ---
